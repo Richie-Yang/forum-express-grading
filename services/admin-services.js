@@ -11,6 +11,21 @@ const adminServices = {
         null, { restaurants }
       ))
       .catch(err => cb(err))
+  },
+
+  deleteRestaurant: (req, cb) => {
+    const { id } = req.params
+
+    return Restaurant.findByPk(id)
+      .then(restaurant => {
+        if (!restaurant) throw new Error("Restaurant didn't exists")
+
+        return restaurant.destroy()
+      })
+      .then(deletedRestaurant => {
+        return cb(null, { restaurant: deletedRestaurant })
+      })
+      .catch(err => cb(err))
   }
 }
 
