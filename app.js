@@ -9,7 +9,7 @@ if (process.env.NODE_ENV !== 'production') {
   require('dotenv').config()
 }
 
-const { pages } = require('./routes')
+const { pages, apis } = require('./routes')
 const passport = require('./config/passport')
 const handlebarsHelpers = require('./helpers/handlebars-helpers')
 const { getUser } = require('./helpers/auth-helpers')
@@ -42,6 +42,7 @@ app.use((req, res, next) => {
   next()
 })
 app.use('/upload', express.static(path.join(__dirname, 'upload')))
+app.use('/api', apis)
 app.use(pages)
 
 app.listen(port, () => {
