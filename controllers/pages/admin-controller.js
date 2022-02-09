@@ -18,29 +18,13 @@ const adminController = {
   },
 
   postRestaurant: (req, res, next) => {
-    const {
-      name, tel, address, openingHours, description, categoryId
-    } = req.body
-
-    if (!name) throw new Error('Restaurant name is required!')
-    const { file } = req
-    return imgurFileHandler(file)
-      .then(filePath => {
-        return Restaurant.create({
-          name,
-          tel,
-          address,
-          openingHours,
-          description,
-          image: filePath || null,
-          categoryId
-        })
-      })
-      .then(() => {
+    adminServices.postRestaurant(
+      req, (err, data) => {
+        if (err) return next(err)
         req.flash('success_messages', 'Restaurant was successfully created')
-        return res.redirect('/admin/restaurants')
-      })
-      .catch(err => next(err))
+        return res.redirect('/admin/restaurants', data)
+      }
+    )
   },
 
   getRestaurant: (req, res, next) => {
@@ -106,7 +90,7 @@ const adminController = {
   deleteRestaurant: (req, res, next) => {
     adminServices.deleteRestaurant(
       req, (err, data) => {
-        if (err) next(err)
+        if (err) return next(err)
         req.flash('success_messages', 'Restaurant was successfully deleted')
         return res.redirect('/admin/restaurants', data)
       }
