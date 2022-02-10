@@ -53,7 +53,7 @@ const userController = {
       // usually, the following tables are included during user deserialization
       // but in case of request user ID does not match request parameter ID,
       // it's necessary to join these tables for later data processing.
-      if (!sessionUser || sessionUser?.id !== requestUserId) {
+      if (sessionUser?.id !== requestUserId) {
         include.push(...[
           { model: Restaurant, as: 'FavoritedRestaurants' },
           { model: User, as: 'Followings' },
@@ -65,20 +65,14 @@ const userController = {
       if (!user) throw new Error("User doesn't exist")
       user = user.toJSON()
 
-      // declare two arrays first, one for only ID array,
-      // another one for actual object that will be used later.
-      const commentIdArray = []
-      const commentObjArray = []
-
-      if (user.Comments?.length) {
-        user.Comments.forEach(c => {
-          if (!commentIdArray.includes(c.restaurantId)) {
-            commentIdArray.push(c.restaurantId)
-            commentObjArray.push(c)
-          }
+      // declare Set to make sure no duplicated ID exists inside,
+      // then using filter function to re-make new array in Comments
+      if (user.Comments.length) {
+        const commentIdSet = new Set(user.Comments.map(c => c.id))
+        user.Comments = user.Comments.filter(c => {
+          if (commentIdSet.has(c.restaurantId)) return c
+          return null
         })
-
-        user.Comments = commentObjArray
       }
 
       // in case of request user ID does match request parameter ID,
