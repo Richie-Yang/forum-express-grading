@@ -60,8 +60,7 @@ const userController = {
       if (user.Comments.length) {
         const commentIdSet = new Set(user.Comments.map(c => c.id))
         user.Comments = user.Comments.filter(c => {
-          if (commentIdSet.has(c.restaurantId)) return c
-          return null
+          return commentIdSet.has(c.restaurantId)
         })
       }
 
